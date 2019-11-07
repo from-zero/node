@@ -1,0 +1,36 @@
+const program = require('commander')
+const symbol = require('log-symbols')
+const chalk = require('chalk')
+program.action(()=>{
+    console.log('refresh...')
+}).parse(process.argv)
+
+const fs = require('fs')
+const handlebars = require('handlebars')
+
+const list = fs.readdirSync('./src/views')
+.filter(v=>v !== 'Home.vue')
+.map(v=>({
+    name:v.replace('.vue', '').toLowerCase(),
+    file:v
+}))
+// console.log(list)
+compile({
+    list
+}, './src/router.js', './template/router.js.hbs')
+
+compile({
+    list
+}, './src/App.vue', './template/App.vue.hbs')
+
+function compile(meta, filePath, templatePath){
+    console.log(meta)
+    if(fs.existsSync(templatePath)){
+        const cont = fs.readFileSync(templatePath).toString();
+        const res = handlebars.compile(cont)(meta);
+        console.log(res)
+        console.log('==============')
+        fs.writeFileSync(filePath, res)
+    }
+    console.log(symbol.success, chalk.green(`${filePath}创建成功`))
+}

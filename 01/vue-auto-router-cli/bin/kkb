@@ -1,0 +1,7 @@
+#!/usr/bin/env node
+const program = require('commander')
+program.version(require('../package.json').version, '-v', '--version')
+.command('init <name> <test>', 'init project')
+.command('refresh','refresh routers...')
+.command('watch','wathc refresh routers...')
+program.parse(process.argv)

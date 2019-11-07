@@ -1,0 +1,39 @@
+const program = require('commander')
+program.action(()=>{
+    console.log('watching')
+})
+// const chokidar = require('chokidar')
+// chokidar.watch('./src/views/').on('all', (event, path) => {
+//   console.log(event, path);
+// });
+
+const fs = require('fs')
+const shell = require('shelljs')
+const chokidar = require('chokidar')
+
+const list = fs.readdirSync('./src/views');
+
+let wc = chokidar.watch('./src/views');
+wc.on('add', function(path){
+    if(path.indexOf('copy') > -1) return
+
+    let farr = path.split('\\');
+    let curr = farr[farr.length-1];
+    let inx = list.lastIndexOf(curr);
+    if(inx > -1){
+        list.splice(inx, 1)
+        console.log(curr+' has exist')
+    }else shell.exec('kkb refresh')
+})
+// .on('change', function(path){
+//     console.log('File', path , 'has been change')
+//     // shell.exec('kkb refresh')
+// })
+.on('unlink', function(path){
+    console.log('File', path , 'has been remove')
+    if(path.indexOf('copy') > -1)  return;
+    shell.exec('kkb refresh')
+})
+// .on('ready', function(path){
+//     console.log('File', path , 'has been ready')
+// })
